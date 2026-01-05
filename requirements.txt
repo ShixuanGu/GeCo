@@ -1,0 +1,7 @@
+# requirement includes VGGT
+Pillow
+huggingface_hub
+einops
+safetensors
+tqdm
+imageio[ffmpeg]

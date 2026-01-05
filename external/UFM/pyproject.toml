@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uniflowmatch"
+version = "0.1.0"
+description = "UFM: A Simple Path towards Unified Dense Correspondence with Flow"
+authors = [
+    { name = "Yuchen Zhang", email = "yuchenz7@andrew.cmu.edu"},
+    { name = "AirLab", email = "basti@andrew.cmu.edu" }
+]
+license = { text = "BSD Clause-3" }
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["computer-vision", "optical-flow", "correspondence", "deep-learning", "pytorch", "transformer"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "numpy",
+    "matplotlib",
+    "opencv-python",
+    "flow_vis",
+    "huggingface_hub",
+    "einops",
+    "gradio",
+    # UniCeption dependencies
+    "timm",
+    "jaxtyping",
+    "Pillow",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "pre-commit",
+    "pytest",
+]
+demo = [
+    "gradio",
+]
+all = [
+    "black",
+    "isort",
+    "pre-commit",
+    "pytest",
+    "gradio",
+]
+
+[project.scripts]
+ufm = "uniflowmatch.cli:main"
+ufm-demo = "gradio_demo:main"
+
+[project.urls]
+Homepage = "https://uniflowmatch.github.io/"
+Repository = "https://github.com/UniFlowMatch/UFM.git"
+Documentation = "https://uniflowmatch.github.io/"
+"Bug Tracker" = "https://github.com/UniFlowMatch/UFM/issues"
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | cuda
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
