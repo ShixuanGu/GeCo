@@ -90,6 +90,10 @@ python GeCo-Eval_evaluation.py \
   --models Gen_Veo3.1,Gen_SORA2
 ```
 
+## Checklist
+
+- [ ] Release the training-free guidance code
+- [ ] Organize pair-wise demo code
 
 ## Citation
 If you find this code useful for your research, please cite our paper:
