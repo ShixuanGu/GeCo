@@ -20,8 +20,6 @@
 
 </div>
 
----
-
 
 ## Installation
 Clone the repository and set up the environment. This implementation relies on [UFM](https://uniflowmatch.github.io/) for motion prediction and [VGGT](https://vgg-t.github.io/) for geometry estimation.
