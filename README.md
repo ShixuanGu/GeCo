@@ -85,7 +85,7 @@ GeCo-Eval
 ### Run Evaluation
 This script calculates the aggregate GeCo score for a specific model across all categories.
 
-```python
+```bash
 python GeCo-Eval_evaluation.py \
   --frames_root path/to/GeCo-Eval/frames \
   --models Gen_Veo3.1,Gen_SORA2
