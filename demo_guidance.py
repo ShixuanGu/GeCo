@@ -7,7 +7,7 @@ import argparse
 current_dir = os.path.dirname(os.path.abspath(__file__))
 external_root = os.path.join(current_dir, "external")
 paths_to_add = [
-    os.path.join(external_root, "guidance_geco"),
+    os.path.join(external_root, "guidance_cogvideox"),
     os.path.join(external_root, "vggt"),
     os.path.join(external_root, "UFM"),
     external_root 
