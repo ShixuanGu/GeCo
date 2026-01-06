@@ -1,4 +1,3 @@
-# requirement includes VGGT
 Pillow
 huggingface_hub
 einops

@@ -1,0 +1,7 @@
+opencv-python
+diffusers
+transformers
+decord
+accelerate
+sentencepiece
+peft

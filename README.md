@@ -35,7 +35,7 @@ cd GeCo
 conda create -n geco python=3.11 -y
 conda activate geco
 
-# Install UFM dependencies (Motion)
+# Install UFM dependencies
 cd external/UFM/UniCeption
 pip install -e .
 cd ..
@@ -45,15 +45,18 @@ pip install -e .
 # This generates `ufm_output.png` which should match `examples/example_ufm_output.png`
 python uniflowmatch/models/ufm.py
 
-# Install VGGT & GeCo requirements (Structure)
+# Install VGGT & GeCo requirements
 cd ../..
 pip install -r requirements.txt
+
+# Install requirements for test time guidance experiment
+pip install -r requirements_guidance.txt
 ```
 
 ## Detecting Deformation on a Single Video
-Run GeCo on a single video to generate consistency maps (Motion Map, Structure Map, and Fused Map).
+Run GeCo on a single video to generate consistency maps (i.e., Motion Map, Structure Map, and Fused Map).
 
-```python
+```bash
 python demo_detection.py \
   --frame_path examples/deform_house \
   --outdir examples/results
@@ -79,7 +82,7 @@ GeCo-Eval
 │   └── ...
 ├── ...
 ```
-Run Evaluation
+### Run Evaluation
 This script calculates the aggregate GeCo score for a specific model across all categories.
 
 ```python
@@ -88,9 +91,18 @@ python GeCo-Eval_evaluation.py \
   --models Gen_Veo3.1,Gen_SORA2
 ```
 
-## Checklist
+## Test Time Guidance Experiment
+Run the following command to generate videos with and without guidance:
+```bash
+python demo_guidance.py \
+  --only both \
+  --model-path THUDM/CogVideoX-5b \
+  --loss-fn residual_motion \
+  --fixed-frames "12,24,36,48" \
+  --prompt "A steady 360° orbit around a detailed globe on a stand in a book-lined study."
+```
 
-- [ ] Release the training-free guidance code
+## Checklist
 - [ ] Organize pair-wise demo code
 
 ## Citation
