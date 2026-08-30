@@ -302,3 +302,7 @@ If you find this code useful for your research, please cite our paper:
   year={2025}
 }
 ```
+
+## Acknowledgements
+[Claude](https://claude.com/claude-code) was used for organizing the environment
+packages of this release.
