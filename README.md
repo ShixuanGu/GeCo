@@ -103,18 +103,28 @@ the non-gated backends only).  A SLURM template for FASRC-style clusters is in
 
 ## Detecting Deformation on a Single Video
 Run GeCo on a directory of frames to generate the per-frame consistency maps
-(Motion Map, Structure Map and Fused Map), streamed to an mp4/gif plus PNGs.
+(Motion Map, Structure Map and Fused Map).  Everything for one video is written to
+`results/<video name>/` (change the parent with `--outdir`): one consistency-map PNG
+per frame plus the rendered video, e.g.
+
+```
+results/deform_house/
+├── deform_house.mp4      rendered video (or .gif / both, see --save_mode)
+├── grid_0000.png         per-frame maps: source | motion | structure | fused
+├── grid_0001.png
+└── ...
+```
 
 ```bash
-# paper setting (VGGT + UFM)
-python demo_detection.py --frame_path examples/deform_house --outdir examples/results
+# paper setting (VGGT + UFM) -> results/deform_house/
+python demo_detection.py --frame_path examples/deform_house
 
-# better geometry + a different flow model
-python demo_detection.py --frame_path examples/deform_house --outdir examples/results_omega \
+# better geometry + a different flow model -> results/omega_searaft/deform_house/
+python demo_detection.py --frame_path examples/deform_house --outdir results/omega_searaft \
   --geometry vggt_omega --flow sea_raft
 
-# any PTLFlow model, e.g. DPFlow trained on Sintel
-python demo_detection.py --frame_path examples/deform_house --outdir examples/results_dpflow \
+# any PTLFlow model, e.g. DPFlow trained on Sintel -> results/dpflow/deform_house/
+python demo_detection.py --frame_path examples/deform_house --outdir results/dpflow \
   --flow ptlflow --flow_model dpflow --flow_ckpt sintel
 ```
 

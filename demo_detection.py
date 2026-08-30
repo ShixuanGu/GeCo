@@ -6,8 +6,8 @@ For every frame of a video the script builds a temporal window around it, runs
 the geometry backend (camera + depth) once on the window, predicts the flow from
 the frame to each neighbour with the flow backend, and accumulates the GeCo
 motion / structure / fused errors (``geco.metric``).  The averaged maps are
-rendered next to the source frame and streamed to an mp4 / gif plus per-frame
-PNGs.
+rendered next to the source frame and written to ``<outdir>/<video name>/``:
+an mp4 / gif plus one consistency-map PNG per frame.
 
 Backends are selected with the shared ``--geometry`` / ``--flow`` flags
 (``geco.cli``); the default pair (VGGT + UFM) is the one used in the paper.
@@ -35,7 +35,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--frame_path", type=str, required=True,
                    help="Full path to the directory containing the video frames (images).")
     p.add_argument("--outdir", type=str, default="results",
-                   help="Directory where output videos (mp4/gif) and images will be saved.")
+                   help="Parent output directory; everything for one video is written to "
+                        "<outdir>/<video name>/ (mp4/gif plus per-frame consistency-map PNGs).")
 
     # Output Control
     p.add_argument("--fps", type=int, default=16,
@@ -79,7 +80,8 @@ def main() -> None:
     device = geometry.device
 
     fn = os.path.basename(os.path.normpath(img_dir))
-    os.makedirs(args.outdir, exist_ok=True)
+    video_outdir = os.path.join(args.outdir, fn)  # results/<video name>/
+    os.makedirs(video_outdir, exist_ok=True)
 
     with torch.no_grad():
         all_files = list_frame_files(img_dir)
@@ -106,15 +108,13 @@ def main() -> None:
         gif_keys = all_output_keys if save_gif else []
         png_keys = all_output_keys
 
-        png_outdir = os.path.join(args.outdir, f"{fn}_frames")
-        if len(png_keys) > 0:
-            os.makedirs(png_outdir, exist_ok=True)
+        png_outdir = video_outdir
 
         for k in mp4_keys:
             out_name = f"{fn}_{k}.mp4"
             if k == "grid":
                 out_name = f"{fn}.mp4"
-            path = os.path.join(args.outdir, out_name)
+            path = os.path.join(video_outdir, out_name)
             mp4_writers[k] = imageio.get_writer(
                 path, fps=args.fps, codec='libx264', pixelformat='yuv420p', macro_block_size=None
             )
@@ -123,7 +123,7 @@ def main() -> None:
             out_name = f"{fn}_{k}.gif"
             if k == "grid":
                 out_name = f"{fn}.gif"
-            path = os.path.join(args.outdir, out_name)
+            path = os.path.join(video_outdir, out_name)
             gif_writers[k] = imageio.get_writer(path, mode='I', fps=args.fps, loop=0)
 
         # --- Processing Loop (Frame by Frame) ---
@@ -228,7 +228,7 @@ def main() -> None:
         for writer in gif_writers.values():
             writer.close()
 
-        print(f"[DONE] {fn}: Saved outputs for mode={args.save_mode}.")
+        print(f"[DONE] {fn}: outputs saved to {video_outdir} (mode={args.save_mode}).")
 
 
 if __name__ == "__main__":
