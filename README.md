@@ -76,12 +76,34 @@ pip install -r requirements_guidance.txt
 
 ### Model weights
 
-| Backend | How weights are obtained |
-|---|---|
-| `vggt`, `ufm`, `sea_raft` | downloaded automatically from the Hugging Face hub on first use (cache: `$HF_HOME`, default `~/.cache/huggingface`). UFM additionally pulls its DINOv2-L encoder through `torch.hub` (cache: `$TORCH_HOME`) |
-| `raft` | downloaded automatically by torchvision (cache: `$TORCH_HOME`, default `~/.cache/torch`) |
-| `vggt_omega` | **gated**: request access at https://huggingface.co/facebook/VGGT-Omega, then either `hf auth login` (auto-download of `vggt_omega_1b_512.pt`) or download the file yourself and pass `--geometry_ckpt /path/to/vggt_omega_1b_512.pt` |
-| `ptlflow` | downloaded automatically by PTLFlow (cache: `$TORCH_HOME`) |
+Every backend except `vggt_omega` downloads its weights automatically on first use --
+the repositories are public, so **no Hugging Face account, access token or approval is
+needed** for `vggt`, `ufm`, `sea_raft`, `raft` and `ptlflow`:
+
+| Backend | How weights are obtained | Account / key |
+|---|---|---|
+| `vggt` | [`facebook/VGGT-1B`](https://huggingface.co/facebook/VGGT-1B) from the Hugging Face hub (cache: `$HF_HOME`, default `~/.cache/huggingface`) | none |
+| `ufm` | [`infinity1096/UFM-Base`](https://huggingface.co/infinity1096/UFM-Base) (or `UFM-Refine`) from the hub; the DINOv2-L encoder comes through `torch.hub` (cache: `$TORCH_HOME`) | none |
+| `sea_raft` | [`MemorySlices/Tartan-C-T-TSKH-spring540x960-M`](https://huggingface.co/MemorySlices/Tartan-C-T-TSKH-spring540x960-M) from the hub | none |
+| `raft` | torchvision (cache: `$TORCH_HOME`, default `~/.cache/torch`) | none |
+| `ptlflow` | PTLFlow's named checkpoints (cache: `$TORCH_HOME`) | none |
+| `vggt_omega` | **gated** -- manual approval required, see below | HF account + access request + token |
+
+**`vggt_omega` (approval required).**  The
+[`facebook/VGGT-Omega`](https://huggingface.co/facebook/VGGT-Omega) weights are gated with
+manual review, so plan for a delay between requesting and receiving access:
+
+1. Sign in to (or create) a Hugging Face account and submit the access request on the
+   [model page](https://huggingface.co/facebook/VGGT-Omega); wait for the approval e-mail.
+2. Once approved, authenticate the machine that will run GeCo: create a **read** token at
+   https://huggingface.co/settings/tokens and run `hf auth login` (or export it as
+   `HF_TOKEN`).  `--geometry vggt_omega` then auto-downloads `vggt_omega_1b_512.pt`.
+3. Alternatively, download `vggt_omega_1b_512.pt` from the model page in your browser and
+   pass it explicitly: `--geometry_ckpt /path/to/vggt_omega_1b_512.pt` (no token needed at
+   run time).
+
+Until access is granted, everything else works: simply leave `vggt_omega` out of
+`--geometry`.
 
 On clusters whose compute nodes have no internet access, run each backend once
 on a login node (or `python scripts/check_backends.py --device cpu --num_frames 2`
