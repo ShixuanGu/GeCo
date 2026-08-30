@@ -1,0 +1,5 @@
+Vendored from https://github.com/facebookresearch/vggt-omega
+commit: 282ec70363edeff59424bf43731658092fba3d37
+date: 2026-08-29
+Only the inference package (vggt_omega/), LICENSE, README.md and requirements.txt are kept; demo files and example videos are omitted.
+No source modifications.

@@ -1,0 +1,5 @@
+# Optional flow backends.
+# PTLFlow gives access to 60+ optical-flow models (DPFlow, MemFlow, SEA-RAFT variants, ...)
+# through `--flow ptlflow --flow_model <name> --flow_ckpt <ckpt>`.
+# geco/flow/ptlflow_backend.py targets the 0.4.x API (0.3.x is not supported).
+ptlflow>=0.4

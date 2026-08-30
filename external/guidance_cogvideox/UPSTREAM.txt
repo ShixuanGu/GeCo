@@ -1,0 +1,5 @@
+Adapted from https://github.com/huggingface/diffusers (Apache-2.0, see LICENSE in this
+directory) -- CogVideoX pipeline (pipelines/cogvideo/pipeline_cogvideox.py) -- with the
+test-time guidance mechanism following https://github.com/agwmon/frame-guidance.
+Modifications: the denoising loop exposes intermediate frames to a differentiable GeCo
+consistency loss (VGGT + UFM) whose gradient steers selected frames during sampling.

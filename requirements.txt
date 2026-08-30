@@ -1,6 +1,11 @@
+# Core GeCo requirements (PyTorch is installed separately, see README "Installation").
+numpy
 Pillow
-huggingface_hub
+opencv-python
+matplotlib
+scipy
 einops
 safetensors
+huggingface_hub
 tqdm
 imageio[ffmpeg]

@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+
+# Outputs
+results/
+examples/results/
+*.csv
+reports/
+jobs/logs/
+*.out
+*.err
+
+# Weights / caches
+checkpoints/
+*.pth
+*.pt
+*.safetensors
+torch_hub/
+hf_cache/
+
+# Editors / OS / app caches
+.vscode/
+.idea/
+.DS_Store
+.gradio/

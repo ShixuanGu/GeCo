@@ -1,0 +1,5 @@
+Vendored from https://github.com/princeton-vl/SEA-RAFT (BSD-3-Clause)
+commit: 9137517ba24e628442aec097d3afe71d03503b75
+date: 2026-08-29
+Files: core/{raft,update,corr,extractor,layer}.py, core/utils/utils.py, config/eval/*.json
+Modifications: imports rewritten as package-relative imports; scipy import made lazy; ImageNet init of the ResNet backbone can be skipped via args.init_weight=False (weights are always overwritten by the checkpoint).

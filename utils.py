@@ -106,6 +106,10 @@ def vggt_infer(
 ):
     """
     Runs the VGGT model to infer Camera Intrinsics, Extrinsics, Depth, and Confidence.
+
+    Legacy helper kept for reference / regression tests (``tests/``).  New code should use
+    the backend interface: ``geco.geometry.build_geometry("vggt")`` -- see ``geco/geometry/vggt.py``,
+    which reproduces this function exactly.
     """
     if device is not None:
         images = images.to(device, non_blocking=True)
@@ -177,6 +181,9 @@ def vggt_infer(
 def predict_correspondences(ufm_model, source_image, target_image, value_range="01"):
     """
     Runs the UFM model to predict 2D Optical Flow and Covisibility.
+
+    Legacy helper kept for reference / regression tests (``tests/``).  New code should use
+    the backend interface: ``geco.flow.build_flow("ufm")`` -- see ``geco/flow/ufm.py``.
     """
     ufm_model.eval()
     for p in ufm_model.parameters():
@@ -564,7 +571,7 @@ def render_error_maps_to_memory(
         if data is None: return np.zeros((100,100,3), dtype=np.uint8)
         norm = (data - vmin) / (vmax - vmin + 1e-8)
         norm = np.clip(norm, 0.0, 1.0)
-        mapper = cm.get_cmap(cmap_name)
+        mapper = plt.get_cmap(cmap_name)  # matplotlib.cm.get_cmap was removed in matplotlib 3.9
         colored = mapper(norm)[..., :3] # Drop Alpha
         return (colored * 255).astype(np.uint8)
 
