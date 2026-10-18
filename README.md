@@ -164,8 +164,12 @@ Backend options (shared by `demo_detection.py` and `GeCo-Eval_evaluation.py`):
 
 Metric options: `--window_size` / `--window_anchor` (temporal context), `--covis_thresh`
 (covisibility threshold, default 0.5), `--conf_percentile` / `--conf_min` (depth-confidence
-mask), `--tau_z` (relative depth margin used to detect wrong occlusions).  Each script's
-output and windowing flags are listed by `--help`.
+mask), `--tau_z` (relative depth margin used to detect wrong occlusions), `--fusion` (`l2` =
+Eq. (5) `sqrt(m^2 + s^2)`, the default and the formula behind the paper's GeCo-Eval numbers;
+`mean` = the arithmetic mean that earlier releases used, see GitHub issue #1) and
+`--motion_only_fallback` (also count pixels where only the motion term is valid in the fused
+map; off by default, as in the paper runs).  Each script's output and windowing flags are
+listed by `--help`.
 
 ## GeCo-Eval Benchmark
 To reproduce the benchmark results, ensure the data directory follows the structure below.

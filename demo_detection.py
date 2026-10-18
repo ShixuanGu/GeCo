@@ -24,7 +24,7 @@ from tqdm import tqdm
 import geco  # noqa: F401  (puts the vendored third-party packages on sys.path)
 from geco.cli import add_backend_args, build_backends
 from geco.image_io import check_same_size, list_frame_files, load_image_rgb
-from geco.metric import ErrorAccumulator, compute_pair_errors, source_confidence_mask
+from geco.metric import FUSION_MODES, ErrorAccumulator, compute_pair_errors, source_confidence_mask
 from utils import render_error_maps_to_memory
 
 
@@ -56,6 +56,11 @@ def parse_args() -> argparse.Namespace:
     # Algorithm Thresholds
     p.add_argument("--tau_z", type=float, default=0.02,
                    help="Relative depth margin threshold for occlusion detection.")
+    p.add_argument("--fusion", type=str, default="l2", choices=FUSION_MODES,
+                   help="Co-visible fusion: 'l2' = sqrt(m^2+s^2), paper Eq. (5) (default); "
+                        "'mean' = 0.5*(m+s), the behaviour of releases before the fix of issue #1.")
+    p.add_argument("--motion_only_fallback", action="store_true",
+                   help="Also show pixels where only the motion term is valid in the fused map (pre-fix behaviour).")
     p.add_argument("--covis_thresh", type=float, default=0.5,
                    help="Covisibility threshold for the flow model.")
     p.add_argument("--conf_percentile", type=float, default=20,
@@ -191,6 +196,7 @@ def main() -> None:
                 pe = compute_pair_errors(
                     geo, 0, ti, flow_out, conf_src,
                     covis_thresh=args.covis_thresh, tau_z=args.tau_z, depth_check="bidirectional",
+                    fusion=args.fusion, motion_only_fallback=args.motion_only_fallback,
                 )
                 acc.add(pe)
 

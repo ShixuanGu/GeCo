@@ -39,7 +39,7 @@ from geco.cli import add_backend_args, build_backends
 from geco.flow import FlowBackend
 from geco.geometry import GeometryBackend
 from geco.image_io import check_same_size, list_frame_files, load_image_rgb
-from geco.metric import ErrorAccumulator, compute_pair_errors, source_confidence_mask
+from geco.metric import FUSION_MODES, ErrorAccumulator, compute_pair_errors, source_confidence_mask
 from utils import build_fixed_len_cover_windows
 
 # ---------------------- Configuration ----------------------
@@ -121,6 +121,7 @@ def evaluate_one_window(
             pe = compute_pair_errors(
                 geo, src, tgt, flow_out, conf_src_mask,
                 covis_thresh=args.covis_thresh, tau_z=args.tau_z, depth_check="unidirectional",
+                fusion=args.fusion, motion_only_fallback=args.motion_only_fallback,
             )
             acc.add(pe)
 
@@ -243,6 +244,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--conf_percentile", type=float, default=20.0, help="Depth confidence percentile.")
     p.add_argument("--conf_min", type=float, default=0.2, help="Depth confidence min.")
     p.add_argument("--tau_z", type=float, default=0.02, help="Occlusion depth margin.")
+    p.add_argument("--fusion", type=str, default="l2", choices=FUSION_MODES,
+                   help="Co-visible fusion: 'l2' = sqrt(m^2+s^2), paper Eq. (5) (default, used for Tab. 5); "
+                        "'mean' = 0.5*(m+s), the behaviour of releases before the fix of issue #1.")
+    p.add_argument("--motion_only_fallback", action="store_true",
+                   help="Also count pixels where only the motion term is valid in the fused map "
+                        "(pre-fix behaviour; the paper's benchmark runs did not).")
 
     # Output
     p.add_argument("--csv_dir", type=str, default=".", help="Directory for the per-model CSVs.")

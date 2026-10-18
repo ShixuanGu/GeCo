@@ -13,9 +13,15 @@ never touches the metric itself.  For one (source, target) pair:
 3. *Structure error* ``e_z``: relative depth inconsistency between the
    projected source depth and the target depth sampled at the projected
    location (bidirectional check for the demo, unidirectional for the benchmark).
-4. *Fusion*: average both errors on non-occluded pixels, use ``e_z`` alone on
-   "wrong occlusion" pixels (flow says occluded, geometry says visible), and
-   ``e_xy`` alone where only the motion term is valid.
+4. *Fusion*: combine both errors on non-occluded (co-visible) pixels and use
+   ``e_z`` alone on "wrong occlusion" pixels (flow says occluded, geometry says
+   visible).  ``fusion="l2"`` (default) is Eq. (5) of the paper,
+   ``sqrt(e_xy^2 + e_z^2)``, which produced the GeCo-Eval numbers in Tab. 5;
+   ``fusion="mean"`` is the arithmetic mean ``0.5 * (e_xy + e_z)`` that earlier
+   versions of this repository used (GitHub issue #1).  With
+   ``motion_only_fallback=True`` pixels where only the motion term is valid
+   contribute ``e_xy`` to the fused map as well; the paper's benchmark runs
+   did not include them (default ``False``).
 """
 from __future__ import annotations
 
@@ -35,6 +41,7 @@ from utils import (
 )
 
 DEPTH_CHECKS = ("bidirectional", "unidirectional")
+FUSION_MODES = ("l2", "mean")  # "l2" = paper Eq. (5); "mean" = arithmetic mean (pre-fix behaviour)
 
 
 def source_confidence_mask(
@@ -88,9 +95,13 @@ def compute_pair_errors(
     covis_thresh: float = 0.5,
     tau_z: float = 0.02,
     depth_check: str = "bidirectional",
+    fusion: str = "l2",
+    motion_only_fallback: bool = False,
 ) -> PairErrors:
     if depth_check not in DEPTH_CHECKS:
         raise ValueError(f"depth_check must be one of {DEPTH_CHECKS}, got {depth_check!r}")
+    if fusion not in FUSION_MODES:
+        raise ValueError(f"fusion must be one of {FUSION_MODES}, got {fusion!r}")
     K, E, D = geo.intrinsic, geo.extrinsic, geo.depth
     H, W = geo.image_hw
     if tuple(flow_out.flow.shape[:2]) != (H, W):
@@ -117,15 +128,18 @@ def compute_pair_errors(
     wrong_occ = (~mask_cov) & mask_rp & dep_valid & ~(dz_p > tau_z)  # flow says occluded, geometry disagrees
     dep_mask = dep_no_occ | wrong_occ
     mot_only = mot_valid & ~dep_no_occ
-    fus_mask = dep_mask | mot_only
+    fus_mask = (dep_mask | mot_only) if motion_only_fallback else dep_mask
 
     zero = torch.zeros((), device=e_xy.device, dtype=e_xy.dtype)
     e_xy = torch.where(mot_valid, e_xy, zero)
     e_z = torch.where(dep_mask, e_z, zero)
+    # co-visible pixels: paper Eq. (5) sqrt(m^2 + s^2), or the arithmetic mean
+    covis_fused = torch.sqrt(e_xy * e_xy + e_z * e_z) if fusion == "l2" else 0.5 * (e_xy + e_z)
     p_fus = torch.zeros_like(e_xy)
-    p_fus = torch.where(dep_no_occ, 0.5 * (e_xy + e_z), p_fus)
+    p_fus = torch.where(dep_no_occ, covis_fused, p_fus)
     p_fus = torch.where(wrong_occ, e_z, p_fus)
-    p_fus = torch.where(mot_only, e_xy, p_fus)
+    if motion_only_fallback:
+        p_fus = torch.where(mot_only, e_xy, p_fus)
 
     return PairErrors(
         e_xy=e_xy, e_z=e_z, p_fus=p_fus,
@@ -179,4 +193,4 @@ class ErrorAccumulator:
         )
 
 
-__all__ = ["DEPTH_CHECKS", "ErrorAccumulator", "PairErrors", "compute_pair_errors", "source_confidence_mask"]
+__all__ = ["DEPTH_CHECKS", "FUSION_MODES", "ErrorAccumulator", "PairErrors", "compute_pair_errors", "source_confidence_mask"]
