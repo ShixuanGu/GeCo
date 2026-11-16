@@ -25,7 +25,7 @@
 GeCo measures the *geometric consistency* of a video by comparing two independent
 views of its 3D structure: the **motion** predicted by a dense correspondence model
 and the **camera-induced motion** implied by a multi-view geometry estimator (camera
-+ depth).  Pixels where the two disagree reveal deformations, "breathing" scenes,
+\+ depth).  Pixels where the two disagree reveal deformations, "breathing" scenes,
 hallucinated occlusions and other geometric artefacts of generated videos.
 
 The metric itself is model-agnostic.  This release ships **pluggable backends**:
@@ -299,11 +299,13 @@ Please check them before any commercial use.
 If you find this code useful for your research, please cite our paper:
 
 ```bibtex
-@article{gu2025geco,
-  title={GeCo: A Differentiable Geometric Consistency Metric for Video Generation}, 
+@inproceedings{gu2026geco,
+  title={Geco: Evaluating geometric consistency for video generation via motion and structure},
   author={Gu, Leslie and Hur, Junhwa and Herrmann, Charles and Zhan, Fangneng and Zickler, Todd and Sun, Deqing and Pfister, Hanspeter},
-  journal={arXiv preprint arXiv:2512.22274},
-  year={2025}
+  booktitle={European Conference on Computer Vision},
+  pages={499--517},
+  year={2026},
+  organization={Springer}
 }
 ```
 
